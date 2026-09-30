@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Finnix · Centro de Control</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0D'/%3E%3Ctext x='32' y='43' font-family='Arial,sans-serif' font-size='30' font-weight='800' text-anchor='middle' fill='%235BA3E0'%3Efx%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1a5c9e; --blue:#5BA3E0;
+  --bg:#F4F7FB; --surface:#FFFFFF; --surface2:#F8FAFC;
+  --line:#E2E8F0; --text:#0F172A; --muted:#64748B; --faint:#94A3B8;
+  --ok:#10b981; --bad:#ef4444; --wait:#CBD5E1;
+  --shadow:0 1px 2px rgba(15,23,42,.04),0 4px 16px rgba(15,23,42,.06);
+  --hero:#0D0D0D;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B0B0C; --surface:#131416; --surface2:#181a1d;
+    --line:#24272c; --text:#E8EDF3; --muted:#94A3B8; --faint:#64748B; --wait:#334155;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B0B0C; --surface:#131416; --surface2:#181a1d;
+  --line:#24272c; --text:#E8EDF3; --muted:#94A3B8; --faint:#64748B; --wait:#334155;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg);color:var(--text)}
+body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+/* HERO */
+.hero{background:var(--hero);color:#fff;padding:22px 16px 72px}
+.wrap{max-width:1180px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{font-weight:700;font-size:26px;letter-spacing:-.04em;line-height:1}
+.logo-mark .l2{color:var(--blue)}
+.logo-tag{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#94A3B8;border-left:1px solid #2a2d33;padding-left:12px}
+.top-actions{display:flex;gap:8px}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid #2a2d33;display:grid;place-items:center;color:#cbd5e1;transition:.15s}
+.icon-btn:hover{border-color:var(--blue);color:#fff}
+.icon-btn svg{width:18px;height:18px}
+.greet{margin-top:34px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+.greet h1{font-size:clamp(26px,4vw,36px);font-weight:700;letter-spacing:-.03em}
+.greet h1 span{color:var(--blue)}
+.greet p{color:#94A3B8;margin-top:6px;font-size:15px}
+.clock{font-variant-numeric:tabular-nums;color:#cbd5e1;font-size:14px;text-align:right}
+.clock b{display:block;font-size:28px;color:#fff;font-weight:600;letter-spacing:-.02em}
+.search{margin-top:24px;position:relative}
+.search input{width:100%;height:52px;border-radius:14px;border:1px solid #2a2d33;background:#161719;color:#fff;font:inherit;font-size:16px;padding:0 90px 0 46px;outline:none;transition:.15s}
+.search input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(91,163,224,.15)}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:#64748B}
+.search kbd{position:absolute;right:14px;top:50%;transform:translateY(-50%);font:600 11px 'DM Sans',sans-serif;color:#94A3B8;border:1px solid #2a2d33;border-radius:6px;padding:3px 7px}
+
+/* MAIN */
+main{padding:0 16px 60px;margin-top:-48px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.stat small{font-size:12px;color:var(--muted);font-weight:500}
+.stat b{display:block;font-size:24px;font-weight:700;letter-spacing:-.02em;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat b.ok{color:var(--ok)} .stat b.bad{color:var(--bad)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:30px 0 14px;flex-wrap:wrap}
+h2{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{height:32px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px;font-weight:600;color:var(--muted);transition:.15s}
+.chip:hover{color:var(--text)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px;transition:transform .15s,border-color .15s;position:relative}
+.card:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--c) 55%,var(--line))}
+.card.sel{outline:2px solid var(--blue);outline-offset:2px}
+.card-head{display:flex;gap:12px;align-items:center}
+.mono{width:48px;height:48px;border-radius:12px;background:#0D0D0D;display:grid;place-items:center;flex-shrink:0;font-weight:800;font-size:19px;letter-spacing:-.04em;color:var(--c);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 0 0 3px color-mix(in srgb,var(--c) 18%,transparent)}
+.card-title{min-width:0;flex:1}
+.card-title h3{font-size:16px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dom{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:2px;min-width:0}
+.dom span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--wait);flex-shrink:0}
+.dot.ok{background:var(--ok);box-shadow:0 0 0 3px rgba(16,185,129,.18)}
+.dot.bad{background:var(--bad);box-shadow:0 0 0 3px rgba(239,68,68,.18)}
+.star{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--faint);align-self:flex-start}
+.star:hover{color:#f59e0b;background:var(--surface2)}
+.star.on{color:#f59e0b}
+.star svg{width:18px;height:18px}
+.desc{font-size:13.5px;color:var(--muted);line-height:1.45;flex:1}
+.actions{display:flex;gap:6px}
+.go{flex:1;height:38px;border-radius:10px;background:var(--navy);color:#fff;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}
+.go:hover{background:var(--blue)}
+.go.off{background:var(--surface2);color:var(--faint);pointer-events:none;border:1px solid var(--line)}
+.sq{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);transition:.15s}
+.sq:hover{color:var(--text);border-color:var(--faint)}
+.sq svg,.go svg{width:16px;height:16px}
+.sq.dis{opacity:.35;pointer-events:none}
+
+.consoles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.con{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:600;font-size:14px;transition:.15s}
+.con:hover{border-color:var(--faint)}
+.con .mono{width:34px;height:34px;border-radius:9px;font-size:13px;color:#fff;background:var(--c);box-shadow:none}
+.empty{color:var(--muted);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:14px}
+footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30px}
+
+@media (max-width:720px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .logo-tag{display:none}
+  .clock{text-align:left}
+  .search kbd{display:none}
+  .search input{padding-right:16px}
+}
+</style>
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-login" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></symbol>
+  <symbol id="i-vercel" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 22 20H2z"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></symbol>
+  <symbol id="i-star-f" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></symbol>
+</svg>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="top">
+      <div class="logo">
+        <span class="logo-mark">finn<span class="l2">ix</span></span>
+        <span class="logo-tag">Centro de Control</span>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="refresh" title="Verificar estado"><svg><use href="#i-refresh"/></svg></button>
+        <button class="icon-btn" id="theme" title="Cambiar tema"><svg><use href="#i-sun"/></svg></button>
+      </div>
+    </div>
+    <div class="greet">
+      <div>
+        <h1 id="hello">Hola, <span>Ale</span></h1>
+        <p>Todos los paneles de Finnix en un solo lugar.</p>
+      </div>
+      <div class="clock"><b id="time">--:--</b><span id="date"></span></div>
+    </div>
+    <label class="search">
+      <svg><use href="#i-search"/></svg>
+      <input id="q" type="search" placeholder="Buscar proyecto… (Enter abre el primero)" autocomplete="off">
+      <kbd>/</kbd>
+    </label>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="stats">
+      <div class="stat"><small>Proyectos</small><b id="s-total">0</b></div>
+      <div class="stat"><small>Online</small><b id="s-ok" class="ok">–</b></div>
+      <div class="stat"><small>Sin respuesta</small><b id="s-bad" class="bad">–</b></div>
+      <div class="stat"><small>En finnix.com.ar</small><b id="s-dom">0</b></div>
+    </section>
+
+    <div id="fav-wrap" hidden>
+      <div class="bar"><h2>Favoritos</h2></div>
+      <div class="grid" id="favs"></div>
+    </div>
+
+    <div class="bar">
+      <h2>Paneles</h2>
+      <div class="chips" id="chips">
+        <button class="chip on" data-cat="all">Todos</button>
+        <button class="chip" data-cat="finnix">Finnix</button>
+        <button class="chip" data-cat="os">Sistemas OS</button>
+        <button class="chip" data-cat="tools">Herramientas</button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+
+    <div class="bar"><h2>Consolas</h2></div>
+    <div class="consoles" id="consoles"></div>
+  </div>
+</main>
+
+<footer>Finnix · Centro de Control — editá <code>projects.js</code> para agregar proyectos</footer>
+
+<script src="projects.js"></script>
+<script>
+(() => {
+  const P = window.FINNIX_PROJECTS, C = window.FINNIX_CONSOLES;
+  const TEAM = window.FINNIX_TEAM, GH = window.FINNIX_GH;
+  const $ = s => document.querySelector(s);
+  const store = {
+    get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  };
+
+  let favs = store.get('fx.favs', []);
+  let cat = 'all', query = '';
+  const status = {};
+
+  // Tema
+  const applyTheme = t => t ? document.documentElement.setAttribute('data-theme', t) : document.documentElement.removeAttribute('data-theme');
+  applyTheme(store.get('fx.theme', null));
+  $('#theme').onclick = () => {
+    const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+    const cur = document.documentElement.getAttribute('data-theme') || (dark ? 'dark' : 'light');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    applyTheme(next); store.set('fx.theme', next);
+  };
+
+  // Reloj y saludo
+  const tick = () => {
+    const d = new Date(), h = d.getHours();
+    $('#time').textContent = d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    $('#date').textContent = d.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
+    $('#hello').innerHTML = (h < 12 ? 'Buen día' : h < 20 ? 'Buenas tardes' : 'Buenas noches') + ', <span>Ale</span>';
+  };
+  tick(); setInterval(tick, 15000);
+
+  const host = u => u ? new URL(u).host : 'Sin deploy';
+  const panelUrl = p => p.url ? new URL(p.panel || '/', p.url).href : null;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  const card = p => {
+    const st = status[p.id];
+    const fav = favs.includes(p.id);
+    const go = panelUrl(p);
+    return `<article class="card" style="--c:${p.color}" data-id="${p.id}">
+      <div class="card-head">
+        <div class="mono">${esc(p.mono)}</div>
+        <div class="card-title">
+          <h3>${esc(p.name)}</h3>
+          <div class="dom"><i class="dot ${st || ''}"></i><span>${esc(host(p.url))}</span></div>
+        </div>
+        <button class="star ${fav ? 'on' : ''}" data-fav="${p.id}" title="Favorito"><svg><use href="#i-star${fav ? '-f' : ''}"/></svg></button>
+      </div>
+      <p class="desc">${esc(p.desc)}</p>
+      <div class="actions">
+        <a class="go ${go ? '' : 'off'}" href="${go || '#'}" target="_blank" rel="noopener" data-open="${p.id}"><svg><use href="#i-login"/></svg>Ingresar</a>
+        <a class="sq ${p.url ? '' : 'dis'}" href="${p.url || '#'}" target="_blank" rel="noopener" title="Abrir sitio"><svg><use href="#i-ext"/></svg></a>
+        <a class="sq ${p.vercel ? '' : 'dis'}" href="${p.vercel ? `https://vercel.com/${TEAM}/${p.vercel}` : '#'}" target="_blank" rel="noopener" title="Vercel"><svg><use href="#i-vercel"/></svg></a>
+        <a class="sq ${p.repo ? '' : 'dis'}" href="${p.repo ? `https://github.com/${GH}/${p.repo}` : '#'}" target="_blank" rel="noopener" title="GitHub"><svg><use href="#i-gh"/></svg></a>
+      </div>
+    </article>`;
+  };
+
+  const matches = p => {
+    if (cat !== 'all' && p.cat !== cat) return false;
+    if (!query) return true;
+    return [p.name, p.url, p.desc, p.repo, p.vercel].join(' ').toLowerCase().includes(query);
+  };
+
+  let visible = [];
+  const render = () => {
+    visible = P.filter(matches);
+    $('#grid').innerHTML = visible.length ? visible.map(card).join('') : '<div class="empty">Sin resultados</div>';
+    const fp = P.filter(p => favs.includes(p.id));
+    $('#fav-wrap').hidden = !fp.length || !!query;
+    $('#favs').innerHTML = fp.map(card).join('');
+    if (query && visible[0]) $(`#grid .card[data-id="${visible[0].id}"]`)?.classList.add('sel');
+
+    const vals = Object.values(status);
+    $('#s-total').textContent = P.length;
+    $('#s-dom').textContent = P.filter(p => p.url && p.url.includes('finnix.com.ar')).length;
+    if (vals.length) {
+      $('#s-ok').textContent = vals.filter(v => v === 'ok').length;
+      $('#s-bad').textContent = vals.filter(v => v === 'bad').length;
+    }
+  };
+
+  $('#consoles').innerHTML = C.map(c =>
+    `<a class="con" style="--c:${c.color}" href="${c.url}" target="_blank" rel="noopener"><span class="mono">${esc(c.mono)}</span>${esc(c.name)}</a>`
+  ).join('');
+
+  document.addEventListener('click', e => {
+    const f = e.target.closest('[data-fav]');
+    if (!f) return;
+    const id = f.dataset.fav;
+    favs = favs.includes(id) ? favs.filter(x => x !== id) : [...favs, id];
+    store.set('fx.favs', favs);
+    render();
+  });
+
+  $('#chips').onclick = e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    document.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b));
+    cat = b.dataset.cat; render();
+  };
+
+  const q = $('#q');
+  q.oninput = () => { query = q.value.trim().toLowerCase(); render(); };
+  q.onkeydown = e => {
+    if (e.key === 'Enter' && visible[0]) { const u = panelUrl(visible[0]); if (u) window.open(u, '_blank', 'noopener'); }
+    if (e.key === 'Escape') { q.value = ''; query = ''; render(); q.blur(); }
+  };
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+  });
+
+  // Estado: un fetch no-cors resuelve si el host responde, falla si no.
+  const check = async p => {
+    if (!p.url) return;
+    status[p.id] = undefined;
+    const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 8000);
+    try { await fetch(p.url, { mode: 'no-cors', cache: 'no-store', signal: ctrl.signal }); status[p.id] = 'ok'; }
+    catch { status[p.id] = 'bad'; }
+    finally { clearTimeout(t); render(); }
+  };
+  const checkAll = () => P.forEach(check);
+  $('#refresh').onclick = checkAll;
+
+  render();
+  checkAll();
+})();
+</script>
+</body>
+</html>
