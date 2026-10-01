@@ -114,6 +114,10 @@
     try { return new Date(f).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { return ''; }
   }
 
+  function noEncontrado(el) {
+    el.innerHTML = '<p class="fx-post-404">' + esc(el.getAttribute('data-404') || 'No encontramos esta nota.') + '</p>';
+  }
+
   function pintarPosts(sitio) {
     var listas = document.querySelectorAll('[data-cms-posts]');
     var single = document.querySelector('[data-cms-post]');
@@ -136,7 +140,7 @@
       if (single) {
         var slug = new URLSearchParams(location.search).get('slug');
         var p = posts.filter(function (x) { return x.slug === slug; })[0];
-        if (!p) return;
+        if (!p) { noEncontrado(single); return; }
         document.title = p.titulo + ' · ' + document.title;
         single.innerHTML =
           (p.portada ? '<img class="fx-post-cover" src="' + esc(p.portada) + '" alt="">' : '') +
@@ -144,6 +148,9 @@
           '<h1 class="fx-post-h">' + esc(p.titulo) + '</h1>' +
           '<div class="fx-post-body">' + (p.cuerpo_html || '') + '</div>';
       }
+    }, function (e) {
+      if (single) noEncontrado(single);
+      throw e;
     });
   }
 
