@@ -128,6 +128,7 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
   <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></symbol>
   <symbol id="i-star-f" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></symbol>
 </svg>
 
@@ -139,6 +140,7 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
         <span class="logo-tag">Centro de Control</span>
       </div>
       <div class="top-actions">
+        <a class="icon-btn" href="/cms/" title="CMS"><svg><use href="#i-edit"/></svg></a>
         <button class="icon-btn" id="refresh" title="Verificar estado"><svg><use href="#i-refresh"/></svg></button>
         <button class="icon-btn" id="theme" title="Cambiar tema"><svg><use href="#i-sun"/></svg></button>
       </div>
@@ -188,12 +190,13 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
   </div>
 </main>
 
-<footer>Finnix · Centro de Control — editá <code>projects.js</code> para agregar proyectos</footer>
+<footer>Finnix · Centro de Control — paneles editables desde el <a href="/cms/#centro" style="color:var(--blue)">CMS</a></footer>
 
 <script src="projects.js"></script>
+<script src="sdk/finnix-cms.js"></script>
 <script>
 (() => {
-  const P = window.FINNIX_PROJECTS, C = window.FINNIX_CONSOLES;
+  let P = window.FINNIX_PROJECTS, C = window.FINNIX_CONSOLES;
   const TEAM = window.FINNIX_TEAM, GH = window.FINNIX_GH;
   const $ = s => document.querySelector(s);
   const store = {
@@ -224,29 +227,30 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
   };
   tick(); setInterval(tick, 15000);
 
-  const host = u => u ? new URL(u).host : 'Sin deploy';
-  const panelUrl = p => p.url ? new URL(p.panel || '/', p.url).href : null;
+  const safe = (f, d) => { try { return f(); } catch { return d; } };
+  const host = u => u ? safe(() => new URL(u).host, u) : 'Sin deploy';
+  const panelUrl = p => p.url ? safe(() => new URL(p.panel || '/', p.url).href, null) : null;
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   const card = p => {
     const st = status[p.id];
     const fav = favs.includes(p.id);
     const go = panelUrl(p);
-    return `<article class="card" style="--c:${p.color}" data-id="${p.id}">
+    return `<article class="card" style="--c:${esc(p.color)}" data-id="${esc(p.id)}">
       <div class="card-head">
         <div class="mono">${esc(p.mono)}</div>
         <div class="card-title">
           <h3>${esc(p.name)}</h3>
           <div class="dom"><i class="dot ${st || ''}"></i><span>${esc(host(p.url))}</span></div>
         </div>
-        <button class="star ${fav ? 'on' : ''}" data-fav="${p.id}" title="Favorito"><svg><use href="#i-star${fav ? '-f' : ''}"/></svg></button>
+        <button class="star ${fav ? 'on' : ''}" data-fav="${esc(p.id)}" title="Favorito"><svg><use href="#i-star${fav ? '-f' : ''}"/></svg></button>
       </div>
       <p class="desc">${esc(p.desc)}</p>
       <div class="actions">
-        <a class="go ${go ? '' : 'off'}" href="${go || '#'}" target="_blank" rel="noopener" data-open="${p.id}"><svg><use href="#i-login"/></svg>Ingresar</a>
-        <a class="sq ${p.url ? '' : 'dis'}" href="${p.url || '#'}" target="_blank" rel="noopener" title="Abrir sitio"><svg><use href="#i-ext"/></svg></a>
-        <a class="sq ${p.vercel ? '' : 'dis'}" href="${p.vercel ? `https://vercel.com/${TEAM}/${p.vercel}` : '#'}" target="_blank" rel="noopener" title="Vercel"><svg><use href="#i-vercel"/></svg></a>
-        <a class="sq ${p.repo ? '' : 'dis'}" href="${p.repo ? `https://github.com/${GH}/${p.repo}` : '#'}" target="_blank" rel="noopener" title="GitHub"><svg><use href="#i-gh"/></svg></a>
+        <a class="go ${go ? '' : 'off'}" href="${esc(go || '#')}" target="_blank" rel="noopener"><svg><use href="#i-login"/></svg>Ingresar</a>
+        <a class="sq ${p.url ? '' : 'dis'}" href="${esc(p.url || '#')}" target="_blank" rel="noopener" title="Abrir sitio"><svg><use href="#i-ext"/></svg></a>
+        <a class="sq ${p.vercel ? '' : 'dis'}" href="${p.vercel ? `https://vercel.com/${TEAM}/${encodeURIComponent(p.vercel)}` : '#'}" target="_blank" rel="noopener" title="Vercel"><svg><use href="#i-vercel"/></svg></a>
+        <a class="sq ${p.repo ? '' : 'dis'}" href="${p.repo ? `https://github.com/${GH}/${encodeURIComponent(p.repo)}` : '#'}" target="_blank" rel="noopener" title="GitHub"><svg><use href="#i-gh"/></svg></a>
       </div>
     </article>`;
   };
@@ -264,7 +268,7 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
     const fp = P.filter(p => favs.includes(p.id));
     $('#fav-wrap').hidden = !fp.length || !!query;
     $('#favs').innerHTML = fp.map(card).join('');
-    if (query && visible[0]) $(`#grid .card[data-id="${visible[0].id}"]`)?.classList.add('sel');
+    if (query && visible[0]) $(`#grid .card[data-id="${CSS.escape(visible[0].id)}"]`)?.classList.add('sel');
 
     const vals = Object.values(status);
     $('#s-total').textContent = P.length;
@@ -275,9 +279,12 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
     }
   };
 
-  $('#consoles').innerHTML = C.map(c =>
-    `<a class="con" style="--c:${c.color}" href="${c.url}" target="_blank" rel="noopener"><span class="mono">${esc(c.mono)}</span>${esc(c.name)}</a>`
-  ).join('');
+  const renderConsoles = () => {
+    $('#consoles').innerHTML = C.map(c =>
+      `<a class="con" style="--c:${esc(c.color)}" href="${esc(c.url)}" target="_blank" rel="noopener"><span class="mono">${esc(c.mono)}</span>${esc(c.name)}</a>`
+    ).join('');
+  };
+  renderConsoles();
 
   document.addEventListener('click', e => {
     const f = e.target.closest('[data-fav]');
@@ -318,6 +325,17 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
 
   render();
   checkAll();
+
+  // Si el CMS tiene paneles cargados, reemplazan a projects.js.
+  const byOrden = (a, b) => (a.orden ?? 99) - (b.orden ?? 99);
+  if (window.FinnixCMS) {
+    Promise.all([FinnixCMS.coleccion('centro_paneles'), FinnixCMS.coleccion('centro_consolas')])
+      .then(([ps, cs]) => {
+        if (ps.length) { P = ps.sort(byOrden); render(); checkAll(); }
+        if (cs.length) { C = cs.sort(byOrden); renderConsoles(); }
+      })
+      .catch(() => {});
+  }
 })();
 </script>
 </body>
