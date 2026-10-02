@@ -21,6 +21,21 @@
   var PROJECT = 'finnix-crm';
   var KEY = 'AIzaSyCgpZnHLfdoMu3YuCvQvJUnVWONpI3g2LU';
   var BASE = window.FINNIX_CMS_BASE || 'https://firestore.googleapis.com/v1/projects/' + PROJECT + '/databases/(default)/documents';
+  // Lectura por el servidor (Cloud Function cmsPublico, repo crm-finnix):
+  // el pedido a Firestore lo hace la función, así que no depende de App
+  // Check. Leer Firestore directo con la apiKey queda solo de respaldo si la
+  // función no responde (y deja de andar el día que se exija App Check).
+  var API = window.FINNIX_CMS_API === undefined
+    ? 'https://southamerica-east1-' + PROJECT + '.cloudfunctions.net/cmsPublico'
+    : window.FINNIX_CMS_API;
+
+  function viaApi(params) {
+    if (!API) return Promise.reject(new Error('sin API'));
+    return fetch(API + '?' + params).then(function (r) {
+      if (!r.ok) throw new Error('CMS API ' + r.status);
+      return r.json();
+    }).then(function (j) { return j.documentos || []; });
+  }
 
   function val(v) {
     if (!v) return null;
@@ -46,6 +61,10 @@
   }
 
   function coleccion(path) {
+    return viaApi('coleccion=' + encodeURIComponent(path)).catch(function () { return coleccionRest(path); });
+  }
+
+  function coleccionRest(path) {
     var out = [];
     function page(token) {
       var url = BASE + '/' + path + '?pageSize=300&key=' + KEY + (token ? '&pageToken=' + token : '');
@@ -61,6 +80,15 @@
   }
 
   function consulta(col, filtros) {
+    var sitio = filtros.filter(function (f) { return f[0] === 'sitio'; })[0];
+    var soloPublicados = filtros.some(function (f) { return f[0] === 'estado' && f[1] === 'publicado'; });
+    if (col === 'cms_posts' && sitio && soloPublicados && filtros.length === 2) {
+      return viaApi('posts=' + encodeURIComponent(sitio[1])).catch(function () { return consultaRest(col, filtros); });
+    }
+    return consultaRest(col, filtros);
+  }
+
+  function consultaRest(col, filtros) {
     var where = filtros.map(function (f) {
       return { fieldFilter: { field: { fieldPath: f[0] }, op: 'EQUAL', value: { stringValue: f[1] } } };
     });
