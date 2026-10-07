@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Finnix · Métricas</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0D'/%3E%3Ctext x='32' y='43' font-family='Arial,sans-serif' font-size='30' font-weight='800' text-anchor='middle' fill='%235BA3E0'%3Efx%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1a5c9e; --blue:#5BA3E0;
+  --bg:#F4F7FB; --surface:#FFFFFF; --surface2:#F8FAFC;
+  --line:#E2E8F0; --grid:#EDF1F6; --text:#0F172A; --muted:#64748B; --faint:#94A3B8;
+  --bar:#1a5c9e; --ok:#10b981; --warn:#b45309; --bad:#dc2626;
+  --shadow:0 1px 2px rgba(15,23,42,.04),0 4px 16px rgba(15,23,42,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B0B0C; --surface:#131416; --surface2:#181a1d;
+    --line:#24272c; --grid:#1f2226; --text:#E8EDF3; --muted:#94A3B8; --faint:#64748B;
+    --bar:#4a90d0; --warn:#f59e0b; --bad:#f87171;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B0B0C; --surface:#131416; --surface2:#181a1d;
+  --line:#24272c; --grid:#1f2226; --text:#E8EDF3; --muted:#94A3B8; --faint:#64748B;
+  --bar:#4a90d0; --warn:#f59e0b; --bad:#f87171;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg);color:var(--text)}
+body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;font-size:14px}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit;font-size:inherit}
+input{font:inherit;color:#fff;background:#0B0B0C;border:1px solid #2a2d33;border-radius:10px;padding:10px 12px;width:100%;outline:none;margin-bottom:10px}
+input:focus{border-color:var(--blue)}
+[hidden]{display:none!important}
+.logo-mark{font-weight:700;font-size:26px;letter-spacing:-.04em;line-height:1;color:#fff}
+.logo-mark .l2{color:var(--blue)}
+
+#login{min-height:100vh;display:grid;place-items:center;padding:16px;background:#0D0D0D}
+.login-card{width:100%;max-width:380px;background:#131416;border:1px solid #1f2125;border-radius:18px;padding:28px;color:#E8EDF3}
+.login-card p{color:#94A3B8;margin:8px 0 22px}
+.btn{height:40px;padding:0 16px;border-radius:10px;background:var(--navy);color:#fff;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.btn:hover{background:var(--blue)}
+.btn:disabled{opacity:.5}
+.login-card .btn{width:100%;height:44px}
+.err{color:#f87171;font-size:13px;min-height:18px;margin-top:10px}
+
+.hero{background:#0D0D0D;color:#fff;padding:20px 16px 64px}
+.wrap{max-width:1180px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-tag{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#94A3B8;border-left:1px solid #2a2d33;padding-left:12px}
+.top-actions{display:flex;gap:8px;align-items:center}
+.lnk{color:#cbd5e1;border:1px solid #2a2d33;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600}
+.lnk:hover{border-color:var(--blue);color:#fff}
+.hero h1{font-size:clamp(26px,4vw,34px);font-weight:700;letter-spacing:-.03em;margin-top:30px}
+.hero p{color:#94A3B8;margin-top:6px}
+
+main{padding:0 16px 60px;margin-top:-40px}
+.sec{margin-bottom:28px}
+.sec>h2{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.sec>.sub{color:var(--muted);font-size:13px;margin:-4px 0 12px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.tile small{font-size:12px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:6px}
+.tile b{display:block;font-size:26px;font-weight:700;letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums}
+.tile span{display:block;font-size:12px;color:var(--faint);margin-top:2px}
+.tile.warn small::before{content:"⚠";color:var(--warn)}
+.tile.bad small::before{content:"⛔";font-size:11px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.card-h h3{font-size:15px;font-weight:700}
+.card-h small{color:var(--muted)}
+.toggle{font-size:12px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:4px 10px}
+.toggle:hover{color:var(--text)}
+.grid2{display:grid;grid-template-columns:3fr 2fr;gap:12px}
+.chart{position:relative;overflow:hidden;padding-top:6px}
+.chart svg{width:100%;height:220px;display:block;overflow:visible}
+.chart .ax{fill:var(--muted);font-size:11px;font-family:inherit}
+.chart .gl{stroke:var(--grid);stroke-width:1}
+.chart .bar{fill:var(--bar)}
+.chart .hit{fill:transparent;cursor:default}
+.chart .hit:hover+.bar,.chart .bar.on{opacity:.8}
+.chart .bar,.chart .val{pointer-events:none}
+.chart .val{fill:var(--text);font-size:11px;font-weight:600;font-family:inherit}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:8px;padding:6px 10px;font-size:12px;white-space:nowrap;transform:translate(-50%,-110%);opacity:0;transition:opacity .1s}
+.tip b{font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+td.n,th.n{text-align:right}
+tr:last-child td{border-bottom:0}
+.meter{height:8px;background:var(--grid);border-radius:4px;overflow:hidden;min-width:60px}
+.meter i{display:block;height:100%;background:var(--bar);border-radius:0 4px 4px 0}
+.status{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.st{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.st .dot{width:9px;height:9px;border-radius:50%;background:var(--faint);flex-shrink:0}
+.st .dot.ok{background:var(--ok)} .st .dot.bad{background:var(--bad)}
+.st div{min-width:0;flex:1}
+.st strong{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st small{color:var(--muted);font-size:12px}
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.links a{display:block;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.links a:hover{border-color:var(--faint)}
+.links strong{display:block;font-weight:600}
+.links small{color:var(--muted);font-size:12px}
+.note{color:var(--muted);font-size:12.5px;line-height:1.5;margin-top:10px}
+.loading{color:var(--muted);padding:20px 0}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}.logo-tag{display:none}}
+</style>
+</head>
+<body>
+
+<section id="login" hidden>
+  <form class="login-card" id="login-form">
+    <span class="logo-mark">finn<span class="l2">ix</span></span>
+    <p>Métricas · Ingresá con tu cuenta del CRM.</p>
+    <input id="l-email" type="email" placeholder="Email" autocomplete="username" required>
+    <input id="l-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required>
+    <button class="btn" id="l-btn">Ingresar</button>
+    <div class="err" id="l-err"></div>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <header class="hero">
+    <div class="wrap">
+      <div class="top">
+        <div class="logo"><span class="logo-mark">finn<span class="l2">ix</span></span><span class="logo-tag">Métricas</span></div>
+        <div class="top-actions">
+          <button class="lnk" id="refresh">Actualizar</button>
+          <a class="lnk" href="/">Centro</a>
+          <a class="lnk" href="/cms/">CMS</a>
+          <button class="lnk" id="logout">Salir</button>
+        </div>
+      </div>
+      <h1>Cómo viene Finnix</h1>
+      <p id="stamp">Cargando…</p>
+    </div>
+  </header>
+  <main><div class="wrap" id="body"><p class="loading">Cargando métricas…</p></div></main>
+</div>
+
+<script src="/projects.js"></script>
+<script type="module">
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { auth, db, esSuperAdmin } from '../lib/firebase.js';
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const num = n => Number(n || 0).toLocaleString('es-AR');
+const pesos = n => '$' + Math.round(n || 0).toLocaleString('es-AR');
+const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+$('#login-form').onsubmit = async e => {
+  e.preventDefault(); $('#l-err').textContent = ''; $('#l-btn').disabled = true;
+  try { await signInWithEmailAndPassword(auth, $('#l-email').value.trim(), $('#l-pass').value); }
+  catch (err) { $('#l-err').textContent = err.code === 'auth/invalid-credential' ? 'Email o contraseña incorrectos.' : err.message; }
+  finally { $('#l-btn').disabled = false; }
+};
+$('#logout').onclick = () => signOut(auth);
+$('#refresh').onclick = () => cargar();
+
+onAuthStateChanged(auth, async user => {
+  if (!user) { $('#app').hidden = true; $('#login').hidden = false; return; }
+  if (!await esSuperAdmin(user)) {
+    await signOut(auth);
+    $('#l-err').textContent = 'Tu cuenta no tiene permisos de super_admin.';
+    return;
+  }
+  $('#login').hidden = true; $('#app').hidden = false;
+  cargar();
+});
+
+async function leer(col) {
+  try { return (await getDocs(collection(db, col))).docs.map(d => ({ id: d.id, ...d.data() })); }
+  catch (e) { console.warn(col, e.message); return null; }
+}
+
+async function cargar() {
+  $('#stamp').textContent = 'Cargando…';
+  const [clientes, planes, posts, paneles] = await Promise.all([leer('clientes'), leer('planes_finnix'), leer('cms_posts'), leer('centro_paneles')]);
+  if (!clientes) { $('#body').innerHTML = '<div class="card">No se pudieron leer los clientes del CRM. Revisá que tu usuario sea super_admin.</div>'; return; }
+
+  const reales = clientes.filter(c => !c.demo && c.activo !== false);
+  const porEstado = e => reales.filter(c => c.plan_estado === e);
+  const activos = porEstado('activa'), trial = porEstado('trial'), mora = porEstado('mora'), susp = porEstado('suspendida');
+  const sinPlan = reales.filter(c => !c.plan_estado);
+  const mrr = activos.reduce((a, c) => a + (Number(c.plan_precio) || 0), 0);
+  const moraMonto = mora.reduce((a, c) => a + (Number(c.plan_precio) || 0), 0);
+  const honorarios = reales.reduce((a, c) => a + (Number(c.monto_mensual) || 0), 0);
+  const conOS = reales.filter(c => c.commerce_id).length;
+  const appActiva = reales.filter(c => c.app_estado === 'activa').length;
+  const appPrueba = reales.filter(c => c.app_estado === 'prueba').length;
+  const hace30 = Date.now() - 30 * 864e5;
+  const altas30 = reales.filter(c => c.fecha_alta && Date.parse(c.fecha_alta) >= hace30).length;
+  const estudios = new Set(reales.map(c => c.estudio_id || 'insfran')).size;
+
+  // Altas por mes, últimos 12 meses (incluye el actual).
+  const hoy = new Date(), meses = [];
+  for (let i = 11; i >= 0; i--) { const d = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1); meses.push({ k: `${d.getFullYear()}-${d.getMonth()}`, label: `${MESES[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, n: 0 }); }
+  reales.forEach(c => { const t = Date.parse(c.fecha_alta); if (isNaN(t)) return; const d = new Date(t); const m = meses.find(x => x.k === `${d.getFullYear()}-${d.getMonth()}`); if (m) m.n++; });
+
+  // Clientes e ingreso por plan.
+  const nombrePlan = Object.fromEntries((planes || []).map(p => [p.id, p.nombre]));
+  const porPlan = {};
+  reales.filter(c => c.plan_id).forEach(c => {
+    const k = c.plan_id; porPlan[k] ??= { nombre: nombrePlan[k] || k, n: 0, mrr: 0 };
+    porPlan[k].n++; if (c.plan_estado === 'activa') porPlan[k].mrr += Number(c.plan_precio) || 0;
+  });
+  const filasPlan = Object.values(porPlan).sort((a, b) => b.n - a.n);
+  const maxPlan = Math.max(1, ...filasPlan.map(f => f.n));
+
+  const pub = (posts || []).filter(p => p.estado === 'publicado').length;
+  const bor = (posts || []).filter(p => p.estado !== 'publicado').length;
+  const sistemas = (paneles && paneles.length ? paneles : window.FINNIX_PROJECTS).filter(p => p.url).sort((a, b) => (a.orden ?? 99) - (b.orden ?? 99));
+
+  $('#body').innerHTML = `
+  <section class="sec"><h2>Negocio Finnix</h2>
+    <div class="tiles">
+      ${tile('Ingreso mensual por planes', pesos(mrr), `${num(activos.length)} planes activos`)}
+      ${tile('Clientes', num(reales.length), `${num(altas30)} altas en los últimos 30 días`)}
+      ${tile('En prueba', num(trial.length), 'plan en período de prueba')}
+      ${tile('En mora', num(mora.length), `${pesos(moraMonto)} por mes en riesgo`, mora.length ? 'warn' : '')}
+      ${tile('Suspendidos', num(susp.length), 'acceso cortado por falta de pago', susp.length ? 'bad' : '')}
+      ${tile('Sin plan asignado', num(sinPlan.length), 'clientes del estudio sin plan Finnix')}
+    </div>
+  </section>
+
+  <section class="sec"><h2>Estudio y productos</h2>
+    <div class="tiles">
+      ${tile('Honorarios mensuales del estudio', pesos(honorarios), `${num(estudios)} estudio${estudios > 1 ? 's' : ''}`)}
+      ${tile('Con Terminal .OS vinculada', num(conOS), 'Minimarket.OS / Urban OS')}
+      ${tile('Finnix App activas', num(appActiva), `${num(appPrueba)} en prueba`)}
+      ${tile('Novedades publicadas', num(pub), `${num(bor)} borrador${bor === 1 ? '' : 'es'}`)}
+    </div>
+  </section>
+
+  <section class="sec grid2">
+    <div class="card" id="c-altas">
+      <div class="card-h"><h3>Altas de clientes por mes</h3><button class="toggle" data-t="altas">Ver tabla</button></div>
+      <div class="chart" id="ch-altas"></div>
+      <table hidden id="t-altas"><thead><tr><th>Mes</th><th class="n">Altas</th></tr></thead>
+        <tbody>${meses.map(m => `<tr><td>${m.label}</td><td class="n">${num(m.n)}</td></tr>`).join('')}</tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Clientes por plan</h3><small>ingreso de los planes activos</small></div>
+      ${filasPlan.length ? `<table><thead><tr><th>Plan</th><th class="n">Clientes</th><th></th><th class="n">Ingreso/mes</th></tr></thead><tbody>
+        ${filasPlan.map(f => `<tr><td>${esc(f.nombre)}</td><td class="n">${num(f.n)}</td><td><div class="meter"><i style="width:${(f.n / maxPlan) * 100}%"></i></div></td><td class="n">${pesos(f.mrr)}</td></tr>`).join('')}
+      </tbody></table>` : '<p class="note">Todavía no hay clientes con plan asignado.</p>'}
+    </div>
+  </section>
+
+  <section class="sec"><h2>Estado de los sistemas</h2>
+    <div class="status" id="status">${sistemas.map((p, i) => `<div class="st"><i class="dot" id="st-${i}"></i><div><strong>${esc(p.name)}</strong><small id="sm-${i}">Verificando…</small></div></div>`).join('')}</div>
+  </section>
+
+  <section class="sec"><h2>Métricas externas</h2>
+    <p class="sub">Tráfico y pagos viven en sus propias plataformas.</p>
+    <div class="links">
+      ${link('Analytics de Vercel', 'Visitas por sitio (hay que activarlo en cada proyecto)', 'https://vercel.com/alevazquez3610-collabs-projects/~/analytics')}
+      ${link('Search Console', 'Búsquedas y clics desde Google a finnix.com.ar', 'https://search.google.com/search-console?resource_id=sc-domain:finnix.com.ar')}
+      ${link('Mercado Pago', 'Cobros y suscripciones', 'https://www.mercadopago.com.ar/activities')}
+      ${link('Firebase · Usuarios', 'Cuentas creadas en Auth', 'https://console.firebase.google.com/project/finnix-crm/authentication/users')}
+      ${link('Firebase · Uso', 'Lecturas, escrituras y costos', 'https://console.firebase.google.com/project/finnix-crm/usage')}
+    </div>
+    <p class="note">Las ventas de Minimarket.OS y Urban OS no se muestran acá a propósito: las reglas del CRM no dejan que ningún rol de Finnix lea los datos de los comercios ("tus ventas no las ve tu contador").</p>
+  </section>`;
+
+  barras($('#ch-altas'), meses);
+  document.querySelectorAll('.toggle').forEach(b => b.onclick = () => {
+    const t = $('#t-' + b.dataset.t), c = $('#ch-' + b.dataset.t);
+    const tabla = t.hidden; t.hidden = !tabla; c.hidden = tabla; b.textContent = tabla ? 'Ver gráfico' : 'Ver tabla';
+  });
+  $('#stamp').textContent = `Actualizado ${new Date().toLocaleString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · datos en vivo del CRM (sin cuentas demo ni clientes en la papelera)`;
+  estado(sistemas);
+}
+
+function tile(label, valor, sub, cls = '') {
+  return `<div class="tile ${cls}"><small>${esc(label)}</small><b>${esc(valor)}</b><span>${esc(sub)}</span></div>`;
+}
+function link(t, d, u) {
+  return `<a href="${esc(u)}" target="_blank" rel="noopener"><strong>${esc(t)}</strong><small>${esc(d)}</small></a>`;
+}
+
+// Columnas de una sola serie: barras ≤24px, punta redondeada de 4px y base recta,
+// grilla tenue, valor solo en el máximo y en el mes actual; el resto en el tooltip.
+function barras(el, datos) {
+  const W = 600, H = 220, L = 28, B = 22, T = 14;
+  const max = Math.max(1, ...datos.map(d => d.n));
+  const paso = Math.max(1, Math.ceil(max / 4));
+  const tope = paso * Math.ceil(max / paso);
+  const y = v => T + (H - T - B) * (1 - v / tope);
+  const band = (W - L) / datos.length, bw = Math.min(24, band * 0.6), r = Math.min(4, bw / 2);
+  const ticks = []; for (let v = 0; v <= tope; v += paso) ticks.push(v);
+  const iMax = datos.reduce((m, d, i) => d.n > datos[m].n ? i : m, 0);
+  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Altas de clientes por mes">
+    ${ticks.map(v => `<line class="gl" x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`).join('')}
+    ${datos.map((d, i) => {
+      const x = L + band * i + (band - bw) / 2, top = y(d.n), base = y(0), h = base - top;
+      const path = d.n ? `M${x},${base} V${top + r} Q${x},${top} ${x + r},${top} H${x + bw - r} Q${x + bw},${top} ${x + bw},${top + r} V${base} Z` : '';
+      const lab = d.n && (i === iMax || i === datos.length - 1) ? `<text class="val" x="${x + bw / 2}" y="${top - 5}" text-anchor="middle">${d.n}</text>` : '';
+      return `<g><rect class="hit" data-i="${i}" x="${L + band * i}" y="${T}" width="${band}" height="${H - T - B}"/>${path ? `<path class="bar" d="${path}"/>` : ''}${lab}
+        <text class="ax" x="${L + band * i + band / 2}" y="${H - 6}" text-anchor="middle">${d.label.split(' ')[0]}</text></g>`;
+    }).join('')}
+  </svg><div class="tip"></div>`;
+  el.innerHTML = svg;
+  const tip = el.querySelector('.tip'), s = el.querySelector('svg');
+  el.querySelectorAll('.hit').forEach(h => {
+    h.onmouseenter = () => {
+      const d = datos[h.dataset.i], bb = h.getBoundingClientRect(), eb = el.getBoundingClientRect();
+      const ratio = s.getBoundingClientRect().width / W;
+      tip.innerHTML = `${esc(d.label)} · <b>${d.n}</b> alta${d.n === 1 ? '' : 's'}`;
+      tip.style.left = Math.min(Math.max(bb.left - eb.left + bb.width / 2, 70), eb.width - 70) + 'px';
+      tip.style.top = (y(d.n) * ratio) + 'px';
+      tip.style.opacity = 1;
+      h.nextElementSibling?.classList?.add('on');
+    };
+    h.onmouseleave = () => { tip.style.opacity = 0; tip.style.left = '50%'; h.nextElementSibling?.classList?.remove('on'); };
+  });
+}
+
+// Mismo chequeo que el Centro: un fetch no-cors resuelve si el host responde.
+function estado(lista) {
+  lista.forEach((p, i) => {
+    const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 8000), t0 = performance.now();
+    fetch(p.url, { mode: 'no-cors', cache: 'no-store', signal: ctrl.signal })
+      .then(() => { $('#st-' + i).className = 'dot ok'; $('#sm-' + i).textContent = `En línea · ${Math.round(performance.now() - t0)} ms`; })
+      .catch(() => { $('#st-' + i).className = 'dot bad'; $('#sm-' + i).textContent = 'Sin respuesta'; })
+      .finally(() => clearTimeout(t));
+  });
+}
+</script>
+</body>
+</html>

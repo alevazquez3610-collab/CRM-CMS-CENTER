@@ -101,6 +101,8 @@ h2{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;c
 .sq svg,.go svg{width:16px;height:16px}
 .sq.dis{opacity:.35;pointer-events:none}
 
+.cgroup{margin-bottom:14px}
+.cgroup h3{font-size:12px;font-weight:600;color:var(--faint);margin:0 0 8px}
 .consoles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
 .con{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:600;font-size:14px;transition:.15s}
 .con:hover{border-color:var(--faint)}
@@ -128,6 +130,7 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
   <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></symbol>
   <symbol id="i-star-f" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></symbol>
   <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></symbol>
 </svg>
@@ -140,6 +143,7 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
         <span class="logo-tag">Centro de Control</span>
       </div>
       <div class="top-actions">
+        <a class="icon-btn" href="/metricas/" title="Métricas"><svg><use href="#i-chart"/></svg></a>
         <a class="icon-btn" href="/cms/" title="CMS"><svg><use href="#i-edit"/></svg></a>
         <button class="icon-btn" id="refresh" title="Verificar estado"><svg><use href="#i-refresh"/></svg></button>
         <button class="icon-btn" id="theme" title="Cambiar tema"><svg><use href="#i-sun"/></svg></button>
@@ -186,7 +190,7 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
     <div class="grid" id="grid"></div>
 
     <div class="bar"><h2>Consolas</h2></div>
-    <div class="consoles" id="consoles"></div>
+    <div id="consoles"></div>
   </div>
 </main>
 
@@ -247,7 +251,7 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
       </div>
       <p class="desc">${esc(p.desc)}</p>
       <div class="actions">
-        <a class="go ${go ? '' : 'off'}" href="${esc(go || '#')}" target="_blank" rel="noopener"><svg><use href="#i-login"/></svg>Ingresar</a>
+        <a class="go ${go ? '' : 'off'}" href="${esc(go || '#')}" target="_blank" rel="noopener"><svg><use href="#i-${p.sinLogin ? 'ext' : 'login'}"/></svg>${p.sinLogin ? 'Abrir' : 'Ingresar'}</a>
         <a class="sq ${p.url ? '' : 'dis'}" href="${esc(p.url || '#')}" target="_blank" rel="noopener" title="Abrir sitio"><svg><use href="#i-ext"/></svg></a>
         <a class="sq ${p.vercel ? '' : 'dis'}" href="${p.vercel ? `https://vercel.com/${TEAM}/${encodeURIComponent(p.vercel)}` : '#'}" target="_blank" rel="noopener" title="Vercel"><svg><use href="#i-vercel"/></svg></a>
         <a class="sq ${p.repo ? '' : 'dis'}" href="${p.repo ? `https://github.com/${GH}/${encodeURIComponent(p.repo)}` : '#'}" target="_blank" rel="noopener" title="GitHub"><svg><use href="#i-gh"/></svg></a>
@@ -280,9 +284,12 @@ footer{text-align:center;color:var(--faint);font-size:12px;padding:10px 16px 30p
   };
 
   const renderConsoles = () => {
-    $('#consoles').innerHTML = C.map(c =>
-      `<a class="con" style="--c:${esc(c.color)}" href="${esc(c.url)}" target="_blank" rel="noopener"><span class="mono">${esc(c.mono)}</span>${esc(c.name)}</a>`
-    ).join('');
+    const orden = window.FINNIX_GRUPOS || [];
+    const grupos = [...new Set([...orden, ...C.map(c => c.grupo || 'Otros')])].filter(g => C.some(c => (c.grupo || 'Otros') === g));
+    $('#consoles').innerHTML = grupos.map(g => `<div class="cgroup"><h3>${esc(g)}</h3><div class="consoles">${
+      C.filter(c => (c.grupo || 'Otros') === g).map(c =>
+        `<a class="con" style="--c:${esc(c.color)}" href="${esc(c.url)}" ${String(c.url).startsWith('/') ? '' : 'target="_blank" rel="noopener"'}><span class="mono">${esc(c.mono)}</span>${esc(c.name)}</a>`
+      ).join('')}</div></div>`).join('');
   };
   renderConsoles();
 
