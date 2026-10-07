@@ -151,7 +151,7 @@ tr:last-child td{border-bottom:0}
 <script type="module">
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-import { auth, db, esSuperAdmin } from '../lib/firebase.js';
+import { auth, db, esSuperAdmin, appCheckToken } from '../lib/firebase.js';
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -243,6 +243,8 @@ async function cargar() {
     </div>
   </section>
 
+  <section class="sec" id="visitas"><h2>Visitas a los sitios</h2><p class="sub">Cargando visitas…</p></section>
+
   <section class="sec grid2">
     <div class="card" id="c-altas">
       <div class="card-h"><h3>Altas de clientes por mes</h3><button class="toggle" data-t="altas">Ver tabla</button></div>
@@ -281,6 +283,46 @@ async function cargar() {
   });
   $('#stamp').textContent = `Actualizado ${new Date().toLocaleString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · datos en vivo del CRM (sin cuentas demo ni clientes en la papelera)`;
   estado(sistemas);
+  visitas();
+}
+
+const VERCEL = 'https://vercel.com/alevazquez3610-collabs-projects';
+async function visitas() {
+  const el = $('#visitas');
+  const pintar = html => { el.innerHTML = '<h2>Visitas a los sitios</h2>' + html; };
+  try {
+    const h = { Authorization: 'Bearer ' + await auth.currentUser.getIdToken() };
+    const ac = await appCheckToken(); if (ac) h['X-Firebase-AppCheck'] = ac;
+    const r = await fetch('/api/visitas', { headers: h, cache: 'no-store' });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+    if (!j.configurado) {
+      pintar(`<div class="card"><div class="card-h"><h3>Falta conectar Vercel</h3></div>
+        <p class="note" style="margin:0 0 8px">Para ver las visitas acá, un token de Vercel tiene que quedar guardado en el proyecto del Centro:</p>
+        <ol class="note" style="padding-left:18px;line-height:1.8;margin:0">
+          <li>Creá un token en <a href="https://vercel.com/account/settings/tokens" target="_blank" rel="noopener" style="color:var(--blue)">Vercel → Tokens</a> con alcance al equipo <b>alevazquez3610-collab's projects</b>.</li>
+          <li>Guardalo como <code>VERCEL_TOKEN</code> (tipo Sensitive, entorno Production) en <a href="${VERCEL}/finnix-centro/settings/environment-variables" target="_blank" rel="noopener" style="color:var(--blue)">finnix-centro → Environment Variables</a>.</li>
+          <li>Volvé a desplegar finnix-centro (Deployments → ⋯ → Redeploy).</li>
+        </ol></div>`);
+      return;
+    }
+    const ok = j.sitios.filter(s => !s.error);
+    const sum = (k, p) => ok.reduce((a, s) => a + s[p][k], 0);
+    const maxV = Math.max(1, ...ok.map(s => s.d30.visitas));
+    const filas = [...j.sitios].sort((a, b) => (b.d30?.visitas ?? -1) - (a.d30?.visitas ?? -1));
+    pintar(`<div class="tiles" style="margin-bottom:12px">
+        ${tile('Visitas · últimos 30 días', num(sum('visitas', 'd30')), `${num(sum('visitantes', 'd30'))} visitantes`)}
+        ${tile('Visitas · últimos 7 días', num(sum('visitas', 'd7')), `${num(sum('visitantes', 'd7'))} visitantes`)}
+        ${tile('Sitios midiendo', `${ok.length} de ${j.sitios.length}`, ok.length < j.sitios.length ? 'activá Web Analytics en los que faltan' : 'todos activos', ok.length < j.sitios.length ? 'warn' : '')}
+      </div>
+      <div class="card" style="overflow-x:auto"><table><thead><tr><th>Sitio</th><th class="n">Visitantes 7 d</th><th class="n">Visitas 7 d</th><th class="n">Visitantes 30 d</th><th class="n">Visitas 30 d</th><th></th></tr></thead><tbody>
+        ${filas.map(s => s.error
+          ? `<tr><td>${esc(s.nombre)}</td><td colspan="5" style="color:var(--muted)">${s.error === 'apagado' ? `Web Analytics apagado · <a href="${esc(s.panel)}" target="_blank" rel="noopener" style="color:var(--blue)">Activar</a>` : 'No se pudo leer: ' + esc(s.error)}</td></tr>`
+          : `<tr><td><a href="${esc(s.panel)}" target="_blank" rel="noopener">${esc(s.nombre)}</a></td><td class="n">${num(s.d7.visitantes)}</td><td class="n">${num(s.d7.visitas)}</td><td class="n">${num(s.d30.visitantes)}</td><td class="n">${num(s.d30.visitas)}</td><td style="width:22%"><div class="meter"><i style="width:${(s.d30.visitas / maxV) * 100}%"></i></div></td></tr>`).join('')}
+      </tbody></table></div>`);
+  } catch (e) {
+    pintar(`<p class="sub">No se pudieron cargar las visitas (${esc(e.message)}).</p>`);
+  }
 }
 
 function tile(label, valor, sub, cls = '') {
