@@ -9,13 +9,14 @@ const TEAM = 'team_3MqbRUB5GWXF8RuIJMkNngr9';
 const TEAM_SLUG = 'alevazquez3610-collabs-projects';
 const ORIGEN = 'https://centro.finnix.com.ar/';
 
+// Calculadora Ecommerce queda afuera por ahora (Web Analytics apagado en su
+// proyecto); para sumarla: prj_AU2aScoqdGbNJoPa63imOJXzgICH.
 const SITIOS = [
   { nombre: 'finnix.com.ar',          proyecto: 'finnix-ar',             id: 'prj_WjOMPvfAPYNISVP3iTMLYcJj61Jq' },
   { nombre: 'Finnix App',             proyecto: 'finnix-app',            id: 'prj_g6QJsvVj3lAwW2Miup9O1IaddGiG' },
   { nombre: 'Kit Finnix',             proyecto: 'kitfinnix',             id: 'prj_Dya88zLc5ioyT97M4GSLEHq9h01W' },
   { nombre: 'Minimarket.OS',          proyecto: 'minimarket-os',         id: 'prj_FKiL0mVTIF7MysNCrdCazOSdQKk5' },
   { nombre: 'Urban OS',               proyecto: 'urban-os',              id: 'prj_N2bYYiNwKMDQGgMSmXRQasauoFc4' },
-  { nombre: 'Calculadora Ecommerce',  proyecto: 'calculadora-ecommerce', id: 'prj_AU2aScoqdGbNJoPa63imOJXzgICH' },
   { nombre: 'Calculadora Mayorista',  proyecto: 'calculadora-mayorista', id: 'prj_qe2PIh70IAxiufBfRRnBFHmAj3Ub' },
 ];
 
